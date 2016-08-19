@@ -132,7 +132,22 @@ class OpenBMP280
     OpenBMP280(int8_t cspin, int8_t mosipin, int8_t misopin, int8_t sckpin);
 
     bool  begin(uint8_t addr = BMP280_ADDRESS);
+    
+    /**
+    * Force a read of the temperature from the sensor.
+    */
     float readTemperature(void);
+    
+    /**
+    * Obtain temperature after it has already been read from sensor.
+    * This can be used after calling readPressure (or readTemperature),
+    * and avoids polling the sensor a second time.
+    */
+    float cachedTemperature(void);
+    
+    /**
+    * Force a read of the pressure from the sensor.
+    */
     float readPressure(void);
     float readAltitude(float seaLevelhPa = 1013.25);
 
@@ -160,7 +175,7 @@ class OpenBMP280
 
     uint8_t   _i2caddr;
     int32_t   _sensorID;
-    int32_t t_fine;
+    int32_t   _t_fine;
 
     int8_t _cs, _mosi, _miso, _sck;
 

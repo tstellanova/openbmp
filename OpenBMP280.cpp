@@ -271,6 +271,14 @@ void OpenBMP280::readCoefficients(void)
 /*!
 
 */
+
+float OpenBMP280::cachedTemperature(void)
+{
+  float T  = (_t_fine * 5 + 128) >> 8;
+  return T/100;
+}
+
+
 /**************************************************************************/
 float OpenBMP280::readTemperature(void)
 {
@@ -286,10 +294,9 @@ float OpenBMP280::readTemperature(void)
 	     ((adc_T>>4) - ((int32_t)_bmp280_calib.dig_T1))) >> 12) *
 	   ((int32_t)_bmp280_calib.dig_T3)) >> 14;
 
-  t_fine = var1 + var2;
+  _t_fine = var1 + var2;
 
-  float T  = (t_fine * 5 + 128) >> 8;
-  return T/100;
+  return cachedTemperature()
 }
 
 /**************************************************************************/
@@ -300,13 +307,13 @@ float OpenBMP280::readTemperature(void)
 float OpenBMP280::readPressure(void) {
   int64_t var1, var2, p;
 
-  // Must be done first to get the t_fine variable set up
+  // Must be done first to get the _t_fine variable set up
   readTemperature();
 
   int32_t adc_P = read24(BMP280_REGISTER_PRESSUREDATA);
   adc_P >>= 4;
 
-  var1 = ((int64_t)t_fine) - 128000;
+  var1 = ((int64_t)_t_fine) - 128000;
   var2 = var1 * var1 * (int64_t)_bmp280_calib.dig_P6;
   var2 = var2 + ((var1*(int64_t)_bmp280_calib.dig_P5)<<17);
   var2 = var2 + (((int64_t)_bmp280_calib.dig_P4)<<35);
