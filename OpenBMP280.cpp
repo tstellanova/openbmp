@@ -296,7 +296,7 @@ float OpenBMP280::readTemperature(void)
 
   _t_fine = var1 + var2;
 
-  return cachedTemperature()
+  return cachedTemperature();
 }
 
 /**************************************************************************/
